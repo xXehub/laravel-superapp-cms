@@ -1,20 +1,32 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PageController;
 
 Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect()->route('dashboard');
+    }
     return view('welcome');
 });
 
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-// Dashboard route (same as home for now)
 Route::get('/dashboard', [App\Http\Controllers\HomeController::class, 'index'])->name('dashboard');
 
 // Protected routes that require authentication
 Route::middleware(['auth'])->group(function () {
+    
+    // Pages management routes - require 'manage posts' permission
+    Route::middleware(['permission:manage posts'])->group(function () {
+        Route::get('/admin/pages', [PageController::class, 'index'])->name('pages.index');
+        Route::get('/admin/pages/create', [PageController::class, 'create'])->name('pages.create');
+        Route::post('/admin/pages', [PageController::class, 'store'])->name('pages.store');
+        Route::get('/admin/pages/{page}/edit', [PageController::class, 'edit'])->name('pages.edit');
+        Route::put('/admin/pages/{page}', [PageController::class, 'update'])->name('pages.update');
+        Route::delete('/admin/pages/{page}', [PageController::class, 'destroy'])->name('pages.destroy');
+    });
     
     // Users routes - require 'manage users' permission
     Route::middleware(['permission:manage users'])->group(function () {
@@ -48,10 +60,5 @@ Route::middleware(['auth'])->group(function () {
     });
 });
 
-// Redirect root to dashboard if authenticated, otherwise to welcome
-Route::get('/', function () {
-    if (auth()->check()) {
-        return redirect()->route('dashboard');
-    }
-    return view('welcome');
-});
+// Catch-all route for dynamic pages (must be last)
+Route::get('/{slug}', [PageController::class, 'show'])->where('slug', '[a-zA-Z0-9\-_]+');

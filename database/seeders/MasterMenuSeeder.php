@@ -35,6 +35,13 @@ class MasterMenuSeeder extends Seeder
             'urutan' => 3,
         ]);
 
+        $pages = MasterMenu::create([
+            'nama_menu' => 'Pages',
+            'route_name' => 'pages.index',
+            'icon' => 'fas fa-file-alt',
+            'urutan' => 4,
+        ]);
+
         // Create sub-menus for Users
         MasterMenu::create([
             'nama_menu' => 'All Users',
@@ -69,12 +76,29 @@ class MasterMenuSeeder extends Seeder
             'urutan' => 2,
         ]);
 
+        // Create sub-menus for Pages
+        MasterMenu::create([
+            'nama_menu' => 'All Pages',
+            'parent_id' => $pages->id,
+            'route_name' => 'pages.index',
+            'icon' => 'fas fa-list',
+            'urutan' => 1,
+        ]);
+
+        MasterMenu::create([
+            'nama_menu' => 'Create Page',
+            'parent_id' => $pages->id,
+            'route_name' => 'pages.create',
+            'icon' => 'fas fa-plus',
+            'urutan' => 2,
+        ]);
+
         // Create settings menu
         $settings = MasterMenu::create([
             'nama_menu' => 'Settings',
             'route_name' => 'settings.index',
             'icon' => 'fas fa-cog',
-            'urutan' => 4,
+            'urutan' => 6,
         ]);
     }
 }

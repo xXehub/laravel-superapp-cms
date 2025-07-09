@@ -27,9 +27,9 @@ class MenuRoleSeeder extends Seeder
             ]);
         }
 
-        // Editor has access to Dashboard and Posts
+        // Editor has access to Dashboard, Posts, and Pages
         $editorRole = $roles->where('name', 'editor')->first();
-        $editorMenus = $menus->whereIn('nama_menu', ['Dashboard', 'Posts', 'All Posts', 'Create Post']);
+        $editorMenus = $menus->whereIn('nama_menu', ['Dashboard', 'Posts', 'All Posts', 'Create Post', 'Pages', 'All Pages', 'Create Page']);
         foreach ($editorMenus as $menu) {
             MenuRole::create([
                 'role_id' => $editorRole->id,
