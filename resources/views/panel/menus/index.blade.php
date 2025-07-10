@@ -4,11 +4,13 @@
             <i class="fas fa-bars me-2"></i>Menus Management
         </h1>
         <div class="btn-toolbar mb-2 mb-md-0">
-            <button type="button" class="btn btn-primary">
+            <a href="{{ route('dynamic', ['slug' => 'panel/menus/create']) }}" class="btn btn-primary">
                 <i class="fas fa-plus me-2"></i>Add Menu
-            </button>
+            </a>
         </div>
     </div>
+
+    <x-flash-messages />
 
     <div class="table-responsive">
         <table class="table table-striped table-sm">
@@ -16,10 +18,12 @@
                 <tr>
                     <th>ID</th>
                     <th>Nama Menu</th>
+                    <th>Slug</th>
                     <th>Parent</th>
                     <th>Route</th>
                     <th>Icon</th>
                     <th>Urutan</th>
+                    <th>Status</th>
                     <th>Roles</th>
                     <th>Action</th>
                 </tr>
@@ -34,6 +38,7 @@
                             @endif
                             <strong>{{ $menu->nama_menu }}</strong>
                         </td>
+                        <td><code>{{ $menu->slug }}</code></td>
                         <td>
                             @if($menu->parent)
                                 <span class="badge bg-secondary">{{ $menu->parent->nama_menu }}</span>
@@ -57,25 +62,34 @@
                         </td>
                         <td>{{ $menu->urutan }}</td>
                         <td>
+                            @if($menu->is_active)
+                                <span class="badge bg-success">Active</span>
+                            @else
+                                <span class="badge bg-danger">Inactive</span>
+                            @endif
+                        </td>
+                        <td>
                             @foreach($menu->roles as $role)
                                 <span class="badge bg-primary me-1">{{ $role->name }}</span>
                             @endforeach
                         </td>
                         <td>
-                            <button class="btn btn-sm btn-outline-primary me-1">
+                            <a href="{{ route('dynamic', ['slug' => 'panel/menus/edit/' . $menu->id]) }}" class="btn btn-sm btn-outline-primary me-1">
                                 <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-info me-1">
-                                <i class="fas fa-users"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            </a>
+                            <form method="POST" action="{{ route('dynamic', ['slug' => 'panel/menus/delete']) }}" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <input type="hidden" name="id" value="{{ $menu->id }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this menu?');">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="text-center text-muted">Tidak ada menus</td>
+                        <td colspan="10" class="text-center text-muted">No menus found</td>
                     </tr>
                 @endforelse
             </tbody>

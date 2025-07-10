@@ -25,6 +25,18 @@ class DynamicController extends Controller
             $request->merge(['id' => $id]);
         }
         
+        // Extract ID from slug pattern like 'panel/menus/edit/123'
+        if (preg_match('#^(.*?)/(\d+)$#', $slug, $matches)) {
+            $basePath = $matches[1];
+            $extractedId = $matches[2];
+            
+            // Special handling for edit paths
+            if (strpos($basePath, '/edit') !== false) {
+                $slug = $basePath;
+                $request->merge(['id' => $extractedId]);
+            }
+        }
+        
         // Clean mapping approach - minimal conditionals
         $actionMap = [
             '' => 'handleWelcome',
@@ -507,6 +519,12 @@ class DynamicController extends Controller
     protected function handlePanelMenusEdit(Request $request, $slug)
     {
         $menuId = $request->route('id') ?? $request->input('id');
+        
+        if (!$menuId) {
+            return redirect()->route('dynamic', ['slug' => 'panel/menus'])
+                ->with('error', 'Menu ID not provided');
+        }
+        
         $menu = MasterMenu::findOrFail($menuId);
         $parentMenus = MasterMenu::whereNull('parent_id')->where('id', '!=', $menu->id)->get();
         $roles = Role::all();
