@@ -1,11 +1,11 @@
-<x-app title="Kelola Menus - Panel Admin" :is-admin="true" body-class="admin-panel" nav-class="bg-gradient-primary">
+<x-app title="Menus Management - Panel Admin" :use-sidebar="true">
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h1 class="h2">
-            <i class="fas fa-bars me-2"></i>Kelola Menus
+            <i class="fas fa-bars me-2"></i>Menus Management
         </h1>
         <div class="btn-toolbar mb-2 mb-md-0">
             <button type="button" class="btn btn-primary">
-                <i class="fas fa-plus me-2"></i>Tambah Menu
+                <i class="fas fa-plus me-2"></i>Add Menu
             </button>
         </div>
     </div>

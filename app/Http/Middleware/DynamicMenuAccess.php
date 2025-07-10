@@ -10,87 +10,76 @@ use Symfony\Component\HttpFoundation\Response;
 class DynamicMenuAccess
 {
     /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * Handle an incoming request - Clean dynamic access control
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $routeName = $request->route()->getName();
         $currentPath = $request->path();
         
-        // Skip check for certain core routes
-        $skipRoutes = ['dashboard', 'home', 'logout', 'welcome', 'login', 'register'];
-        if (in_array($routeName, $skipRoutes) || str_starts_with($routeName, 'password.')) {
+        // Skip auth routes - clean early return approach
+        if ($this->shouldSkipCheck($currentPath)) {
             return $next($request);
         }
 
-        // Handle panel routes (admin only)
-        if (str_starts_with($currentPath, 'panel/')) {
-            // Check if user is authenticated and is admin
-            if (!auth()->check()) {
-                return redirect()->route('login');
-            }
-            
-            if (!auth()->user()->hasRole('admin')) {
-                abort(403, 'Access denied. Admin role required.');
-            }
-            
-            // Extract slug from panel path
-            $slug = $currentPath; // This will be "panel/dashboard", "panel/users", etc.
-            
-            // Find menu by slug
-            $menu = MasterMenu::where('slug', $slug)->where('is_active', true)->first();
-            
-            if ($menu) {
-                // Check if user's roles have access to this panel menu
-                $userRoleIds = auth()->user()->roles->pluck('id');
-                $hasAccess = $menu->roles()->whereIn('role_id', $userRoleIds)->exists();
-                
-                if (!$hasAccess) {
-                    abort(403, 'Access denied. You do not have permission to access this panel page.');
-                }
-            }
-            
-            return $next($request);
-        }
-
-        // Handle public/user pages - check if there's a corresponding menu
-        $menu = MasterMenu::where('slug', $currentPath)->where('is_active', true)->first();
+        // Check menu access - clean approach without hardcoded roles
+        $menu = $this->findMenuBySlug($currentPath);
         
-        if ($menu && $menu->roles()->exists()) {
-            // This page is protected by menu roles
-            if (!auth()->check()) {
-                return redirect()->route('login');
-            }
-            
-            // Check if user's roles have access to this menu
-            $userRoleIds = auth()->user()->roles->pluck('id');
-            $hasAccess = $menu->roles()->whereIn('role_id', $userRoleIds)->exists();
-            
-            if (!$hasAccess) {
-                abort(403, 'Access denied. You do not have permission to access this page.');
-            }
-        }
-        
-        // Also check by route_name for backwards compatibility
-        if ($routeName) {
-            $menuByRoute = MasterMenu::where('route_name', $routeName)->where('is_active', true)->first();
-            
-            if ($menuByRoute && $menuByRoute->roles()->exists()) {
-                if (!auth()->check()) {
-                    return redirect()->route('login');
-                }
-                
-                $userRoleIds = auth()->user()->roles->pluck('id');
-                $hasAccess = $menuByRoute->roles()->whereIn('role_id', $userRoleIds)->exists();
-                
-                if (!$hasAccess) {
-                    abort(403, 'Access denied. You do not have permission to access this page.');
-                }
-            }
+        if ($menu && $this->menuHasRoleRestrictions($menu)) {
+            return $this->checkMenuAccess($menu) ? $next($request) : $this->denyAccess();
         }
 
         return $next($request);
+    }
+
+    /**
+     * Check if we should skip access check
+     */
+    private function shouldSkipCheck(string $path): bool
+    {
+        $publicPaths = ['', 'login', 'register', 'password'];
+        
+        return in_array($path, $publicPaths) || 
+               str_starts_with($path, 'password/') ||
+               str_starts_with($path, 'email/');
+    }
+
+    /**
+     * Find menu by slug - clean approach
+     */
+    private function findMenuBySlug(string $slug): ?MasterMenu
+    {
+        return MasterMenu::active()->where('slug', $slug)->first();
+    }
+
+    /**
+     * Check if menu has role restrictions
+     */
+    private function menuHasRoleRestrictions(MasterMenu $menu): bool
+    {
+        return $menu->roles()->exists();
+    }
+
+    /**
+     * Check menu access - clean approach without hardcoded roles
+     */
+    private function checkMenuAccess(MasterMenu $menu): bool
+    {
+        if (!auth()->check()) {
+            return false;
+        }
+
+        $userRoleIds = auth()->user()->roles->pluck('id');
+        
+        return $menu->roles()->whereIn('role_id', $userRoleIds)->exists();
+    }
+
+    /**
+     * Deny access with redirect or abort
+     */
+    private function denyAccess(): Response
+    {
+        return auth()->check() 
+            ? abort(403, 'Access denied. You do not have permission to access this page.')
+            : redirect()->route('login');
     }
 }

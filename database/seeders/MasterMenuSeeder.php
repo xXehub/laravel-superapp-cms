@@ -13,8 +13,8 @@ class MasterMenuSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Home/Landing Page - accessible to all
-        $home = MasterMenu::create([
+        // 1. Home/Landing Page - accessible to all (no role restrictions)
+        MasterMenu::create([
             'nama_menu' => 'Beranda',
             'slug' => '',  // Empty slug for homepage
             'route_name' => 'welcome',
@@ -23,104 +23,87 @@ class MasterMenuSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        // 2. Dashboard - for authenticated users
-        $dashboard = MasterMenu::create([
+        // 2. Profile Page - accessible to authenticated users
+        MasterMenu::create([
+            'nama_menu' => 'Profile',
+            'slug' => 'profile',
+            'route_name' => 'profile',
+            'icon' => 'fas fa-user',
+            'urutan' => 1,
+            'is_active' => true,
+        ]);
+
+        // 3. Panel Access - Dashboard moved inside panel structure
+        MasterMenu::create([
             'nama_menu' => 'Dashboard',
-            'slug' => 'dashboard',
-            'route_name' => 'dashboard',
-            'icon' => 'fas fa-tachometer-alt',
-            'urutan' => 1,
-            'is_active' => true,
-        ]);
-
-        // 3. Panel Admin Menu (Main Root Menu) - for admins only
-        $panelMenu = MasterMenu::create([
-            'nama_menu' => 'Panel Admin',
-            'slug' => null,  // No slug for parent menu - it's just a grouper
-            'route_name' => null,  // No direct route, parent menu only
-            'icon' => 'fas fa-shield-alt',
-            'urutan' => 2,
-            'is_active' => true,
-        ]);
-
-        // Panel Admin Sub-menus
-        MasterMenu::create([
-            'nama_menu' => 'Panel Dashboard',
             'slug' => 'panel/dashboard',
-            'parent_id' => $panelMenu->id,
             'route_name' => null,
-            'icon' => 'fas fa-chart-line',
-            'urutan' => 1,
-            'is_active' => true,
-        ]);
-
-        MasterMenu::create([
-            'nama_menu' => 'Kelola Users',
-            'slug' => 'panel/users',
-            'parent_id' => $panelMenu->id,
-            'route_name' => null,
-            'icon' => 'fas fa-users-cog',
+            'icon' => 'fas fa-tachometer-alt',
             'urutan' => 2,
             'is_active' => true,
         ]);
 
         MasterMenu::create([
-            'nama_menu' => 'Kelola Roles',
-            'slug' => 'panel/roles',
-            'parent_id' => $panelMenu->id,
+            'nama_menu' => 'Users',
+            'slug' => 'panel/users',
             'route_name' => null,
-            'icon' => 'fas fa-user-tag',
+            'icon' => 'fas fa-users',
             'urutan' => 3,
             'is_active' => true,
         ]);
 
         MasterMenu::create([
-            'nama_menu' => 'Kelola Permissions',
-            'slug' => 'panel/permissions',
-            'parent_id' => $panelMenu->id,
+            'nama_menu' => 'Roles',
+            'slug' => 'panel/roles',
             'route_name' => null,
-            'icon' => 'fas fa-key',
+            'icon' => 'fas fa-user-tag',
             'urutan' => 4,
             'is_active' => true,
         ]);
 
         MasterMenu::create([
-            'nama_menu' => 'Kelola Menus',
-            'slug' => 'panel/menus',
-            'parent_id' => $panelMenu->id,
+            'nama_menu' => 'Permissions',
+            'slug' => 'panel/permissions',
             'route_name' => null,
-            'icon' => 'fas fa-bars',
+            'icon' => 'fas fa-key',
             'urutan' => 5,
             'is_active' => true,
         ]);
 
         MasterMenu::create([
-            'nama_menu' => 'Kelola Pages',
+            'nama_menu' => 'Menus',
+            'slug' => 'panel/menus',
+            'route_name' => null,
+            'icon' => 'fas fa-bars',
+            'urutan' => 6,
+            'is_active' => true,
+        ]);
+
+        MasterMenu::create([
+            'nama_menu' => 'Pages',
             'slug' => 'panel/pages',
-            'parent_id' => $panelMenu->id,
             'route_name' => null,
             'icon' => 'fas fa-file-alt',
-            'urutan' => 6,
+            'urutan' => 7,
             'is_active' => true,
         ]);
 
         MasterMenu::create([
             'nama_menu' => 'Settings',
             'slug' => 'panel/settings',
-            'parent_id' => $panelMenu->id,
             'route_name' => null,
             'icon' => 'fas fa-cog',
-            'urutan' => 7,
+            'urutan' => 8,
             'is_active' => true,
         ]);
 
-        // 4. Sample dynamic public pages - accessible based on role assignments
+        // 4. Sample public pages
         MasterMenu::create([
             'nama_menu' => 'About Us',
             'slug' => 'about-us',
             'route_name' => null,
             'icon' => 'fas fa-info-circle',
-            'urutan' => 3,
+            'urutan' => 9,
             'is_active' => true,
         ]);
 
@@ -129,25 +112,7 @@ class MasterMenuSeeder extends Seeder
             'slug' => 'contact',
             'route_name' => null,
             'icon' => 'fas fa-envelope',
-            'urutan' => 4,
-            'is_active' => true,
-        ]);
-
-        MasterMenu::create([
-            'nama_menu' => 'Services',
-            'slug' => 'services',
-            'route_name' => null,
-            'icon' => 'fas fa-concierge-bell',
-            'urutan' => 5,
-            'is_active' => true,
-        ]);
-
-        MasterMenu::create([
-            'nama_menu' => 'News',
-            'slug' => 'news',
-            'route_name' => null,
-            'icon' => 'fas fa-newspaper',
-            'urutan' => 6,
+            'urutan' => 10,
             'is_active' => true,
         ]);
     }

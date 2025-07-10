@@ -18,7 +18,7 @@ class MenuRoleSeeder extends Seeder
         $roles = Role::all();
         $menus = MasterMenu::all();
 
-        // Admin has access to all menus (including panel admin)
+        // Admin has access to ALL menus (including all panel menus)
         $adminRole = $roles->where('name', 'admin')->first();
         if ($adminRole) {
             foreach ($menus as $menu) {
@@ -29,17 +29,18 @@ class MenuRoleSeeder extends Seeder
             }
         }
 
-        // Editor has access to Dashboard and public pages, but NO panel admin
+        // Editor has access to profile and pages panel only
         $editorRole = $roles->where('name', 'editor')->first();
         if ($editorRole) {
-            $editorMenus = $menus->whereIn('nama_menu', [
-                'Beranda',
-                'Dashboard',
-                'About Us',
-                'Contact',
-                'Services',
-                'News'
-            ]);
+            $editorMenuSlugs = [
+                '', // Homepage
+                'profile', // Profile
+                'panel/pages', // Pages management only
+                'about-us', // Public pages
+                'contact',
+            ];
+            
+            $editorMenus = $menus->whereIn('slug', $editorMenuSlugs);
             foreach ($editorMenus as $menu) {
                 MenuRole::firstOrCreate([
                     'role_id' => $editorRole->id,
@@ -48,14 +49,17 @@ class MenuRoleSeeder extends Seeder
             }
         }
 
-        // Viewer has access to Beranda and public pages only
+        // Viewer has access to public pages and profile only (NO panel access)
         $viewerRole = $roles->where('name', 'viewer')->first();
         if ($viewerRole) {
-            $viewerMenus = $menus->whereIn('nama_menu', [
-                'Beranda',
-                'About Us',
-                'Contact'
-            ]);
+            $viewerMenuSlugs = [
+                '', // Homepage
+                'profile', // Profile
+                'about-us', // Public pages
+                'contact',
+            ];
+            
+            $viewerMenus = $menus->whereIn('slug', $viewerMenuSlugs);
             foreach ($viewerMenus as $menu) {
                 MenuRole::firstOrCreate([
                     'role_id' => $viewerRole->id,

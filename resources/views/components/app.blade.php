@@ -135,14 +135,25 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('dashboard') }}">
-                                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                    @php
+                                        // Check if user has access to panel/dashboard menu dynamically
+                                        $panelDashboard = \App\Models\MasterMenu::active()
+                                            ->where('slug', 'panel/dashboard')
+                                            ->whereHas('roles', function($q) {
+                                                $q->whereIn('role_id', auth()->user()->roles->pluck('id'));
+                                            })
+                                            ->first();
+                                    @endphp
+                                    
+                                    @if($panelDashboard)
+                                        <a class="dropdown-item" href="{{ route('dynamic', ['slug' => 'panel/dashboard']) }}">
+                                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                        </a>
+                                    @endif
+                                    
+                                    <a class="dropdown-item" href="{{ route('dynamic', ['slug' => 'profile']) }}">
+                                        <i class="fas fa-user me-2"></i>Profile
                                     </a>
-                                    @role('admin')
-                                    <a class="dropdown-item" href="{{ url('/panel/dashboard') }}">
-                                        <i class="fas fa-cog me-2"></i>Panel Admin
-                                    </a>
-                                    @endrole
                                     <hr class="dropdown-divider">
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                         onclick="event.preventDefault();

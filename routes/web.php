@@ -1,29 +1,19 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PageController;
-use App\Http\Controllers\Panel\PanelController;
+use App\Http\Controllers\DynamicController;
 
-// Homepage
-Route::get('/', function () {
-    return view('welcome');
-})->name('welcome');
-
-// Authentication routes
+// Authentication routes (Laravel UI)
 Auth::routes();
 
-// Dashboard routes (both /home and /dashboard point to same controller)
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('/dashboard', [App\Http\Controllers\HomeController::class, 'index'])->name('dashboard');
+// Dynamic routes - handle all requests through single controller
+Route::match(['GET', 'POST', 'PUT', 'DELETE'], '/{slug?}/{id?}', [DynamicController::class, 'handleDynamicRoute'])
+    ->where('slug', '.*')
+    ->where('id', '[0-9]+')
+    ->middleware(['dynamic_menu_access'])
+    ->name('dynamic');
 
-// Panel Admin Routes - Protected by auth, admin role, and dynamic menu access
-Route::middleware(['auth', 'role:admin', 'dynamic_menu_access'])->prefix('panel')->name('panel.')->group(function () {
-    Route::get('/{slug}', [PanelController::class, 'dynamicRoute'])
-        ->where('slug', '[a-zA-Z0-9\-_]+')
-        ->name('dynamic');
-});
-
-// Dynamic pages - Check access via middleware, show public or menu-protected pages
-Route::middleware(['dynamic_menu_access'])->get('/{slug}', [PageController::class, 'show'])
-    ->where('slug', '[a-zA-Z0-9\-_/]+')
-    ->name('page.show');
+// Named route helpers for backward compatibility
+Route::redirect('/home', '/profile')->name('home');
+Route::get('/', [DynamicController::class, 'handleDynamicRoute'])->name('welcome');
+Route::get('/profile', [DynamicController::class, 'handleDynamicRoute'])->name('profile');

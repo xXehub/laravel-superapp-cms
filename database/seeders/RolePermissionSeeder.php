@@ -18,42 +18,75 @@ class RolePermissionSeeder extends Seeder
         // Clear cache
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // Create permissions
+        // Create permissions - Clean list following instructions
         $permissions = [
+            // Dashboard/Panel access
+            'access panel',
             'view dashboard',
-            'manage users',
+            
+            // User management
+            'view users',
             'create users',
-            'edit users',
+            'edit users', 
             'delete users',
-            'manage posts',
-            'create posts',
-            'edit posts',
-            'delete posts',
-            'view posts',
+            
+            // Role management
+            'view roles',
+            'create roles',
+            'edit roles',
+            'delete roles',
+            
+            // Permission management
+            'view permissions',
+            'create permissions',
+            'edit permissions',
+            'delete permissions',
+            
+            // Menu management
+            'view menus',
+            'create menus',
+            'edit menus',
+            'delete menus',
+            
+            // Page management
+            'view pages',
+            'create pages',
+            'edit pages',
+            'delete pages',
+            
+            // Settings management
+            'view settings',
+            'edit settings',
+            
+            // Profile management
+            'view profile',
+            'edit profile',
         ];
 
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission]);
         }
 
-        // Create roles and assign permissions
+        // Create roles and assign permissions - Clean approach
         $admin = Role::create(['name' => 'admin']);
-        $admin->givePermissionTo(Permission::all());
+        $admin->givePermissionTo(Permission::all()); // Admin gets all permissions
 
         $editor = Role::create(['name' => 'editor']);
         $editor->givePermissionTo([
+            'access panel',
             'view dashboard',
-            'manage posts',
-            'create posts',
-            'edit posts',
-            'delete posts',
-            'view posts',
+            'view pages',
+            'create pages',
+            'edit pages',
+            'delete pages',
+            'view profile',
+            'edit profile',
         ]);
 
         $viewer = Role::create(['name' => 'viewer']);
         $viewer->givePermissionTo([
-            'view dashboard',
-            'view posts',
+            'view profile',
+            'edit profile',
         ]);
 
         // Create admin user

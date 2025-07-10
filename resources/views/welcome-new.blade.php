@@ -9,8 +9,24 @@
                 <h1 class="display-4">Laravel Superapp CMS</h1>
                 <p class="lead">A powerful content management system built with Laravel 12, featuring role-based permissions, dynamic menus, and clean architecture.</p>
                 @auth
-                    <a class="btn btn-light btn-lg" href="{{ route('dashboard') }}" role="button">
-                        <i class="fas fa-tachometer-alt"></i> Go to Dashboard
+                    @php
+                        // Check if user has access to panel/dashboard menu dynamically
+                        $panelMenu = \App\Models\MasterMenu::active()
+                            ->where('slug', 'panel/dashboard')
+                            ->whereHas('roles', function($q) {
+                                $q->whereIn('role_id', auth()->user()->roles->pluck('id'));
+                            })
+                            ->first();
+                    @endphp
+                    
+                    @if($panelMenu)
+                        <a class="btn btn-light btn-lg" href="{{ route('dynamic', ['slug' => 'panel/dashboard']) }}" role="button">
+                            <i class="fas fa-tachometer-alt"></i> Go to Panel
+                        </a>
+                    @endif
+                    
+                    <a class="btn btn-outline-light btn-lg" href="{{ route('dynamic', ['slug' => 'profile']) }}" role="button">
+                        <i class="fas fa-user"></i> My Profile
                     </a>
                 @else
                     <a class="btn btn-light btn-lg" href="{{ route('login') }}" role="button">

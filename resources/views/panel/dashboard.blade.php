@@ -1,7 +1,7 @@
-<x-app title="Panel Admin Dashboard" :is-admin="true" body-class="admin-panel" nav-class="bg-gradient-primary">
+<x-app title="Panel Admin Dashboard" :use-sidebar="true">
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h1 class="h2">
-            <i class="fas fa-shield-alt me-2"></i>Panel Admin Dashboard
+            <i class="fas fa-tachometer-alt me-2"></i>Panel Dashboard
         </h1>
     </div>
 

@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             MasterMenuSeeder::class,
             MenuRoleSeeder::class,
             PageSeeder::class,
+            SettingSeeder::class,
         ]);
     }
 }
