@@ -18,33 +18,50 @@ class MenuRoleSeeder extends Seeder
         $roles = Role::all();
         $menus = MasterMenu::all();
 
-        // Admin has access to all menus
+        // Admin has access to all menus (including panel admin)
         $adminRole = $roles->where('name', 'admin')->first();
-        foreach ($menus as $menu) {
-            MenuRole::create([
-                'role_id' => $adminRole->id,
-                'menu_id' => $menu->id,
-            ]);
+        if ($adminRole) {
+            foreach ($menus as $menu) {
+                MenuRole::firstOrCreate([
+                    'role_id' => $adminRole->id,
+                    'menu_id' => $menu->id,
+                ]);
+            }
         }
 
-        // Editor has access to Dashboard, Posts, and Pages
+        // Editor has access to Dashboard and public pages, but NO panel admin
         $editorRole = $roles->where('name', 'editor')->first();
-        $editorMenus = $menus->whereIn('nama_menu', ['Dashboard', 'Posts', 'All Posts', 'Create Post', 'Pages', 'All Pages', 'Create Page']);
-        foreach ($editorMenus as $menu) {
-            MenuRole::create([
-                'role_id' => $editorRole->id,
-                'menu_id' => $menu->id,
+        if ($editorRole) {
+            $editorMenus = $menus->whereIn('nama_menu', [
+                'Beranda',
+                'Dashboard',
+                'About Us',
+                'Contact',
+                'Services',
+                'News'
             ]);
+            foreach ($editorMenus as $menu) {
+                MenuRole::firstOrCreate([
+                    'role_id' => $editorRole->id,
+                    'menu_id' => $menu->id,
+                ]);
+            }
         }
 
-        // Viewer has access to Dashboard and view Posts only
+        // Viewer has access to Beranda and public pages only
         $viewerRole = $roles->where('name', 'viewer')->first();
-        $viewerMenus = $menus->whereIn('nama_menu', ['Dashboard', 'Posts', 'All Posts']);
-        foreach ($viewerMenus as $menu) {
-            MenuRole::create([
-                'role_id' => $viewerRole->id,
-                'menu_id' => $menu->id,
+        if ($viewerRole) {
+            $viewerMenus = $menus->whereIn('nama_menu', [
+                'Beranda',
+                'About Us',
+                'Contact'
             ]);
+            foreach ($viewerMenus as $menu) {
+                MenuRole::firstOrCreate([
+                    'role_id' => $viewerRole->id,
+                    'menu_id' => $menu->id,
+                ]);
+            }
         }
     }
 }

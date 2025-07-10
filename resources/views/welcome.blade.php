@@ -1,23 +1,21 @@
-@extends('layouts.app')
-
-@section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <!-- Hero Section -->
-            <div class="jumbotron bg-primary text-white text-center rounded p-5 mb-5">
-                <h1 class="display-4">Laravel Superapp CMS</h1>
-                <p class="lead">A powerful content management system built with Laravel 12, featuring role-based permissions, dynamic menus, and clean architecture.</p>
-                @auth
-                    <a class="btn btn-light btn-lg" href="{{ route('dashboard') }}" role="button">
-                        <i class="fas fa-tachometer-alt"></i> Go to Dashboard
-                    </a>
-                @else
-                    <a class="btn btn-light btn-lg" href="{{ route('login') }}" role="button">
-                        <i class="fas fa-sign-in-alt"></i> Login to Continue
-                    </a>
-                @endauth
-            </div>
+<x-app title="Laravel Superapp CMS" :use-sidebar="false">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <!-- Hero Section -->
+                <div class="jumbotron bg-primary text-white text-center rounded p-5 mb-5">
+                    <h1 class="display-4">Laravel Superapp CMS</h1>
+                    <p class="lead">A powerful content management system built with Laravel 12, featuring role-based permissions, dynamic menus, and clean architecture.</p>
+                    @auth
+                        <a class="btn btn-light btn-lg" href="{{ route('dashboard') }}" role="button">
+                            <i class="fas fa-tachometer-alt"></i> Go to Dashboard
+                        </a>
+                    @else
+                        <a class="btn btn-light btn-lg" href="{{ route('login') }}" role="button">
+                            <i class="fas fa-sign-in-alt"></i> Login to Continue
+                        </a>
+                    @endauth
+                </div>
 
             <!-- Features Section -->
             <div class="row mb-5">
@@ -148,5 +146,4 @@
             @endguest
         </div>
     </div>
-</div>
-@endsection
+</x-app>

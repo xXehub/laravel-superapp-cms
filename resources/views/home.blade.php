@@ -1,9 +1,7 @@
-@extends('layouts.app-with-sidebar')
-
-@section('content')
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Dashboard</h1>
-</div>
+<x-app title="Dashboard">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Dashboard</h1>
+    </div>
 
 <div class="row">
     <div class="col-md-6 col-lg-3 mb-4">
@@ -93,4 +91,4 @@
         </div>
     </div>
 </div>
-@endsection
+</x-app>
